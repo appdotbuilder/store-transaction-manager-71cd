@@ -1,17 +1,25 @@
 
+import { db } from '../db';
+import { storeProfilesTable } from '../db/schema';
 import { type CreateStoreProfileInput, type StoreProfile } from '../schema';
 
-export async function createStoreProfile(input: CreateStoreProfileInput): Promise<StoreProfile> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a new store profile and persisting it in the database.
-    return Promise.resolve({
-        id: 1,
+export const createStoreProfile = async (input: CreateStoreProfileInput): Promise<StoreProfile> => {
+  try {
+    // Insert store profile record
+    const result = await db.insert(storeProfilesTable)
+      .values({
         name: input.name,
         address: input.address,
         phone: input.phone,
         email: input.email,
-        npwp: input.npwp,
-        created_at: new Date(),
-        updated_at: new Date()
-    } as StoreProfile);
-}
+        npwp: input.npwp
+      })
+      .returning()
+      .execute();
+
+    return result[0];
+  } catch (error) {
+    console.error('Store profile creation failed:', error);
+    throw error;
+  }
+};

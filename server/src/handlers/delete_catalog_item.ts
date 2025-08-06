@@ -1,7 +1,18 @@
 
+import { db } from '../db';
+import { catalogItemsTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
+
 export async function deleteCatalogItem(id: number): Promise<boolean> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting a catalog item from the database.
-    // Returns true if deletion was successful, false otherwise.
-    return Promise.resolve(true);
+  try {
+    const result = await db.delete(catalogItemsTable)
+      .where(eq(catalogItemsTable.id, id))
+      .execute();
+
+    // Check if any rows were affected (deleted)
+    return result.rowCount !== null && result.rowCount > 0;
+  } catch (error) {
+    console.error('Catalog item deletion failed:', error);
+    throw error;
+  }
 }
